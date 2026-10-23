@@ -79,15 +79,20 @@ public class Grafo {
 		}
 		return aristas;
 	}
+	
+	
+	private void verificarAmbosVetices(int origen, int destino) {
+		verificarVertice(destino);
+		verificarVertice(origen);
+		verificarDistintos(origen, destino);
+	}
 
-	//	VERIFICA QUE LOS VERTICES NO SEAN IGUALES
 	private void verificarDistintos(int origen, int destino) {		
 		if( origen == destino) {
 			throw new IllegalArgumentException("No se permiten loops: (" + origen + ", " + destino + ")");
 		}
 	}
 
-	//VERIFICA QUE LOS VERTICES ESTEN EN RANGO	
 	private void verificarVertice(int vertice) {
 		if(vertice<0) {
 			throw new IllegalArgumentException("El vertice no puede ser negativo: " + vertice);
@@ -95,11 +100,5 @@ public class Grafo {
 		if (vertice >= matriz.length) {
 			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + vertice);
 		}
-	}
-
-	private void verificarAmbosVetices(int origen, int destino) {
-		verificarVertice(destino);
-		verificarVertice(origen);
-		verificarDistintos(origen, destino);
 	}
 }
