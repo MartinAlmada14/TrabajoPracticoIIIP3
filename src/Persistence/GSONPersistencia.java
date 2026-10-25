@@ -6,69 +6,91 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
-import Model.Conjunto;
+import Model.Arista;
+import Model.Red;
+import Model.Vertice;
 
 public class GSONPersistencia implements IPersistencia {
+	private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	private static final Path DATA_DIR = Paths.get("data");
-	private static final Path FILE_PATH = DATA_DIR.resolve("Datos.json");
-	private final Gson gson;
-
-	public GSONPersistencia() {
-		this.gson = new GsonBuilder().setPrettyPrinting().create();
-
-		try {
-			Files.createDirectories(DATA_DIR);
-		} catch (IOException e) {
-			throw new RuntimeException(
-					"No se pudo crear la carpeta de datos.", e);
+	
+	private static class RedDTO {
+		List<String> vertices = new ArrayList<String>();
+		List<int[]> aristas = new ArrayList<int[]>();
+	}
+	
+	
+	@Override
+	public Red cargar(Path archivo)	{
+		if(!Files.isRegularFile(archivo)) {
+			throw new PersistenciaException("No existe el archivo: " + archivo);
+		}
+		try(Reader reader = Files.newBufferedReader(archivo)) {
+		return aRed(gson.fromJson(reader, RedDTO.class));
+		}
+		catch (IOException | JsonParseException e) {
+			throw new PersistenciaException("No se pudo leer el archivo: " + archivo, e);
 		}
 	}
 
 	@Override
-	public Optional<Conjunto> cargar() {
-		return cargar(FILE_PATH);
-	}
-
-	@Override
-	public Optional<Conjunto> cargar(Path archivo) {
-		if (!Files.exists(archivo) || !Files.isRegularFile(archivo)) {
-			return Optional.empty();
-		}
-
-		try (Reader reader = Files.newBufferedReader(archivo)) {
-			Conjunto conjunto = gson.fromJson(reader, Conjunto.class);
-			return Optional.ofNullable(conjunto);
-
-		} catch (IOException | com.google.gson.JsonParseException e) {
-			throw new RuntimeException(
-					"No se pudo cargar el archivo: " + archivo, e);
-		}
-	}
-
-	@Override
-	public void guardar(Conjunto conjunto) {
-		if (conjunto == null) {
-			throw new IllegalArgumentException(
-					"No se puede guardar un conjunto nulo.");
+	public void guardar(Red red, Path archivo) {
+		if (red == null) {
+			throw new IllegalArgumentException("No se puede guardar un red nulo.");
 		}
 		try {
-			Files.createDirectories(DATA_DIR);
-
-			try (Writer writer = Files.newBufferedWriter(FILE_PATH)) {
-				gson.toJson(conjunto, writer);
+			Path padre = archivo.toAbsolutePath().getParent();
+			if(padre != null) {
+				Files.createDirectories(padre);
+			}
+			try (Writer writer = Files.newBufferedWriter(archivo)) {
+				gson.toJson(aDTO(red), writer);
 			}
 
-		} catch (IOException e) {
-			throw new RuntimeException(
-					"No se pudo guardar el archivo: " + FILE_PATH, e);
+		} catch (IOException | JsonParseException e) {
+			throw new PersistenciaException("No se pudo guardar el archivo: " + archivo, e);
 		}
 	}
-}
+	
+	private Red aRed(RedDTO dto) {
+		if(dto == null || dto.vertices == null || dto.aristas == null) {
+			throw new PersistenciaException("El archivo no tiene el formato esperado");	
+		}
+		try {
+			Red red = new Red();
+			for(String nombre : dto.vertices) {
+				red.agregarVertice(nombre);
+			}
+			for(int[] arista : dto.aristas) {
+				if(arista == null || arista.length != 2) {
+					throw new PersistenciaException("Cada arista debe tener exactamente dos extremos");
+				}
+				red.agregarArista(arista[0], arista[1]);
+			}
+			return red;
+		} catch (IllegalArgumentException e) {
+			throw new PersistenciaException("Contenido invalido: " + e.getMessage(), e);
+		}
+		
+	}
 
+	private RedDTO aDTO(Red red) {
+		RedDTO dto = new RedDTO();
+		for(Vertice vertice : red.getVertices()) {
+			dto.vertices.add(vertice.getNombre());
+		}
+		for(Arista arista : red.aristas() ) {
+			dto.aristas.add(new int[] {arista.getOrigen(), arista.getDestino()});
+		}
+		return dto;
+	}
+	
+}

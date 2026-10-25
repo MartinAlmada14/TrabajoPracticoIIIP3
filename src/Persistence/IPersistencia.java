@@ -3,14 +3,11 @@ package Persistence;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import Model.Conjunto;
+import Model.Red;
 
 public interface IPersistencia {
 
-	Optional<Conjunto> cargar();
-
-	Optional<Conjunto> cargar(Path archivo);
-
-	void guardar(Conjunto conjunto);
+	Red cargar(Path archivo);
+	void guardar(Red red, Path archivo);
 }
 
