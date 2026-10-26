@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Grafo {
-	private final List<Set<Integer>> adyacencia = new ArrayList<Set<Integer>>();
+	private List<Set<Integer>> adyacencia = new ArrayList<Set<Integer>>();
 
 	public Grafo(int vertices) {
 		if(vertices < 0) {
@@ -40,31 +40,13 @@ public class Grafo {
 		return adyacencia.get(origen).contains(destino);
 	}
 
-/*	public double pesoArista(int origen, int destino) {
-		verificarAmbosVetices(origen, destino);
-
-		if (!existeArista(origen, destino)) {
-			throw new IllegalArgumentException(
-					"No existe una arista entre " + origen + " y " + destino);
-		}
-		return matriz[origen][destino].getPeso();
-	}*/
-
 	public int tamano() {
 	//	return matriz.length;
 		return adyacencia.size();
 	}
 
 	public Set<Integer> vecinos(int vertice) {
-		verificarVertice(vertice);
-
-		/* Set<Integer> vecinos = new HashSet<Integer>();
-		for(int j = 0; j < this.tamano(); ++j) if( vertice != j ) {
-			if( this.existeArista(vertice,j) ) {
-				vecinos.add(j);
-			}
-		}
-		return vecinos;*/		
+		verificarVertice(vertice);		
 		return Collections.unmodifiableSet(adyacencia.get(vertice));
 	}
 	
@@ -82,17 +64,6 @@ public class Grafo {
 	}
 	//	OBTENGO LAS ARISTAS SIN REPETIDOS
 	public List<Arista> aristas(){
-		/*aristas = new ArrayList<Arista>();
-
-		for (int fila = 0; fila < matriz.length; fila++) {
-			for (int columna = fila +1 ; columna < matriz.length; columna++) {
-				if(matriz[fila][columna] != null) {
-					aristas.add(matriz[fila][columna]);
-				}
-			}
-
-		} 
-		return aristas;*/
 		List<Arista> resultado = new ArrayList<Arista>();
 		for(int origen = 0; origen < adyacencia.size(); origen++) {
 			for(int destino : adyacencia.get(origen)) {

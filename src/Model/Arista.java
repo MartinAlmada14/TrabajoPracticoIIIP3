@@ -6,12 +6,10 @@ public class Arista {
 
 	private final int origen;
 	private final int destino;
-	//private double peso;
 	
 	public Arista(int origen, int destino) {
 		this.origen = origen;
 		this.destino = destino;
-		//this.peso = peso;
 	}
 
 	public int getOrigen() {
@@ -22,15 +20,6 @@ public class Arista {
 		return destino;
 	}
 
-	/*public double getPeso() {
-		return peso;
-	}*/
-
-	/*@Override
-	public int compareTo(Arista otraArista) {
-		return Double.compare(this.peso, otraArista.peso);
-	}*/
-	
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof Arista)) {
