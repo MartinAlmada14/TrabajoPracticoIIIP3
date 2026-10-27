@@ -7,66 +7,64 @@ import java.util.List;
 import java.util.Set;
 
 public class Grafo {
-	private List<Set<Integer>> adyacencia = new ArrayList<Set<Integer>>();
+	private List<Set<Integer>> vecinos = new ArrayList<Set<Integer>>();
 
-	public Grafo(int vertices) {
-		if(vertices < 0) {
-			throw new IllegalArgumentException("La cantidad de vertices no puede ser negativa " + vertices);
+	public Grafo(int cantVertices) {
+		if(cantVertices < 0) {
+			throw new IllegalArgumentException("La cantidad de vertices no puede ser negativa " + cantVertices);
 		}
-		for(int i = 0; i < vertices; i++) {
+		for(int i = 0; i < cantVertices; i++) {
 			agregarVertice();
 		}
 	}
 	
-	public int agregarVertice() {
-		adyacencia.add(new HashSet<Integer>());
-		return adyacencia.size() - 1;
+	public void agregarVertice() {
+		vecinos.add(new HashSet<Integer>());
 	}
 	
 	public void agregarArista(int origen,int destino) {
 		verificarAmbosVertices(origen, destino);
-		adyacencia.get(origen).add(destino);
-		adyacencia.get(destino).add(origen);
+		vecinos.get(origen).add(destino);
+		vecinos.get(destino).add(origen);
 	}
 
 	public void eliminarArista(int origen, int destino) {
 		verificarAmbosVertices(origen, destino);
-		adyacencia.get(origen).remove(destino);
-		adyacencia.get(destino).remove(origen);
+		vecinos.get(origen).remove(destino);
+		vecinos.get(destino).remove(origen);
 	}
 
 	public boolean existeArista(int origen, int destino) {
 		verificarAmbosVertices(origen, destino);
-		return adyacencia.get(origen).contains(destino);
+		return vecinos.get(origen).contains(destino);
 	}
 
 	public int tamano() {
-	//	return matriz.length;
-		return adyacencia.size();
+		return vecinos.size();
 	}
 
 	public Set<Integer> vecinos(int vertice) {
 		verificarVertice(vertice);		
-		return Collections.unmodifiableSet(adyacencia.get(vertice));
+		return Collections.unmodifiableSet(vecinos.get(vertice));
 	}
 	
 	public int grado(int vertice) {
 		verificarVertice(vertice);
-		return adyacencia.get(vertice).size();
+		return vecinos.get(vertice).size();
 	}
 
 	public int cantidadAristas() {
 		int sumaGrados = 0;
-		for(Set<Integer> vecinos : adyacencia) {
+		for(Set<Integer> vecinos : vecinos) {
 			sumaGrados += vecinos.size();
 		}
 		return sumaGrados / 2;
 	}
-	//	OBTENGO LAS ARISTAS SIN REPETIDOS
+	
 	public List<Arista> aristas(){
 		List<Arista> resultado = new ArrayList<Arista>();
-		for(int origen = 0; origen < adyacencia.size(); origen++) {
-			for(int destino : adyacencia.get(origen)) {
+		for(int origen = 0; origen < vecinos.size(); origen++) {
+			for(int destino : vecinos.get(origen)) {
 				if(origen < destino) {
 					resultado.add(new Arista(origen, destino));
 				}
@@ -76,11 +74,19 @@ public class Grafo {
 		return resultado;
 	}
 	
+	public List<Integer> vertices() {
+	    List<Integer> resultado = new ArrayList<Integer>();
+	    for (int vertice = 0; vertice < vecinos.size(); vertice++) {
+	        resultado.add(vertice);
+	    }
+	    return resultado;
+	}
+	
 	public boolean esDominante(Set<Integer> candidato) {
 		for(int v : candidato) {
 			verificarVertice(v);
 		}
-		for(int v = 0; v < adyacencia.size(); v++) {
+		for(int v = 0; v < vecinos.size(); v++) {
 			if(!candidato.contains(v) && !tieneVecinoEn(v, candidato)) {
 				return false;
 			}
@@ -90,7 +96,7 @@ public class Grafo {
 	
 	
 	private boolean tieneVecinoEn(int v, Set<Integer> candidato) {
-		for(int vecino : adyacencia.get(v)) {
+		for(int vecino : vecinos.get(v)) {
 			if(candidato.contains(vecino)) {
 				return true;
 			}
@@ -114,7 +120,7 @@ public class Grafo {
 		if(vertice < 0) {
 			throw new IllegalArgumentException("El vertice no puede ser negativo: " + vertice);
 		}
-		if (vertice >= adyacencia.size()) {
+		if (vertice >= vecinos.size()) {
 			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + vertice);
 		}
 	}

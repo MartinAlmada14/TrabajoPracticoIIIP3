@@ -18,9 +18,10 @@ public class Red {
 			throw new IllegalArgumentException("Ya existe un vertice llamado: " + vertice.getNombre());
 		}
 		vertices.add(vertice);
-		int indice = grafo.agregarVertice();
-		indices.put(vertice.getNombre(), indice);
-		return indice;
+//		int indice = grafo.agregarVertice();
+//		indices.put(vertice.getNombre(), indice);
+//		return indice;
+		return 1; //es momentaneo para que no de error
 	}
 
 	public void agregarArista(int origen, int destino) {
