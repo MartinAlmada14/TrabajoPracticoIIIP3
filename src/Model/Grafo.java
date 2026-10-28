@@ -74,8 +74,8 @@ public class Grafo {
 		return resultado;
 	}
 	
-	public List<Integer> vertices() {
-	    List<Integer> resultado = new ArrayList<Integer>();
+	public Set<Integer> vertices() {
+	    Set<Integer> resultado = new HashSet<Integer>();
 	    for (int vertice = 0; vertice < vecinos.size(); vertice++) {
 	        resultado.add(vertice);
 	    }

@@ -4,54 +4,51 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Goloso2 implements Solver{
+	private Set<Integer> dominantes;
+	private Set<Integer> sinCubrir;
+	private int mejorVertice;
+	private int mejorCobertura;
 
 	@Override
 	public Set<Integer> resolver(Grafo grafo) {
-		Set<Integer> dominantes = new HashSet<Integer>();
-		Lst<Integer> sinCubrir = grafo.vertices()
-		
-		while (!sinCubrir.isEmpty()) {
-			int mejor = verticeConMayorCobertura(grafo, sinCubrir);
-			dominantes.add(mejor);
-			sinCubrir.remove(mejor);
-			sinCubrir.removeAll(grafo.vecinos(mejor));
+		dominantes = new HashSet<Integer>();
+		sinCubrir = grafo.vertices();
+
+		while(!sinCubrir.isEmpty()) {
+			
+			mejorCobertura(grafo);
+			dominantes.add(mejorVertice);
+			
+			sinCubrir.remove(mejorVertice);
+			sinCubrir.removeAll(grafo.vecinos(mejorVertice));
 		}
+
 		return dominantes;
 	}
-
-	private int verticeConMayorCobertura(Grafo grafo, Set<Integer> sinCubrir) {
-		int mejor = -1;
-		int mejorCobertura = -1;
-		for(int v = 0; v < grafo.tamano(); v++) {
-			int cobertura = cobertura(grafo, v, sinCubrir);
-			if(cobertura > mejorCobertura) {
-				mejor = v;
+	
+	private void mejorCobertura(Grafo grafo){
+		mejorVertice = -1;
+		mejorCobertura = -1;
+		for(int vertice = 0; vertice < grafo.tamano(); vertice++) {
+			int cobertura = cobertura(vertice, grafo);
+			if (cobertura > mejorCobertura) {
 				mejorCobertura = cobertura;
+				mejorVertice = vertice;
 			}
 		}
-		return mejor;
-	}
-
+	}	
 	
-	
-	private int cobertura(Grafo grafo, int v, Set<Integer> sinCubrir) {
-		int cobertura = sinCubrir.contains(v) ? 1 : 0;
-		for(int vecino : grafo .vecinos(v)) {
+	private int cobertura(int v, Grafo grafo) {
+		int cobertura = 0;
+		if(sinCubrir.contains(v)) {
+			cobertura++;
+		}
+		Set<Integer> vecinos = grafo.vecinos(v);
+		for(int vecino : vecinos) {
 			if(sinCubrir.contains(vecino)) {
 				cobertura++;
 			}
-		}
+		}		
 		return cobertura;
 	}
-
-	private Set<Integer> todosLosVertices(Grafo grafo) {
-		Set<Integer> todos = new HashSet<Integer>();
-		for(int v = 0; v < grafo.tamano(); v++) {
-			todos.add(v);
-		}
-		return todos;
-	}
-	
-	
-
 }

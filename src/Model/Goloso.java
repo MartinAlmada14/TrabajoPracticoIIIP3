@@ -36,10 +36,11 @@ public class Goloso implements Solver{
 	
 	private int cobertura(Grafo grafo, int v, Set<Integer> sinCubrir) {
 		int cobertura = sinCubrir.contains(v) ? 1 : 0;
-		for(int vecino : grafo .vecinos(v)) {
+		for(int vecino : grafo.vecinos(v)) {
 			if(sinCubrir.contains(vecino)) {
 				cobertura++;
 			}
+
 		}
 		return cobertura;
 	}

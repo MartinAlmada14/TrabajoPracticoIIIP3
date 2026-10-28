@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class Arista {
 
-	private final int origen;
-	private final int destino;
+	private int origen;
+	private int destino;
 	
 	public Arista(int origen, int destino) {
 		this.origen = origen;
