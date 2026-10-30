@@ -23,7 +23,7 @@ public class VentanaPrincipal {
 		panelControles = new PanelControles();
 		presenter = new Presenter();
 		frame.add(vistaGrafo, java.awt.BorderLayout.CENTER);
-//		frame.add(panelControles, java.awt.BorderLayout.SOUTH);		
+		frame.add(panelControles, java.awt.BorderLayout.SOUTH);		
 		conectarEventos();
 	}
 
