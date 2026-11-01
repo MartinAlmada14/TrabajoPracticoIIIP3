@@ -18,6 +18,7 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
     private Object parent;
     private mxGraphComponent componente;
 
+    // Guarda las referencias a los vértices de JGraphX.
     private List<Object> vertices;
 
     public VistaGrafo() {
@@ -30,7 +31,6 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
 
         vertices = new ArrayList<Object>();
 
-        // Configuración visual e interacción.
         grafo.setCellsEditable(false);
         grafo.setCellsMovable(false);
         grafo.setCellsResizable(false);
@@ -42,11 +42,12 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
     }
 
     @Override
-    public void dibujar(List<String> nombres, List<int[]> aristas) {
+    public void dibujar(int cantidadVertices, List<int[]> aristas) {
 
         grafo.getModel().beginUpdate();
 
         try {
+
             // Eliminamos el dibujo anterior.
             grafo.removeCells(
                 grafo.getChildCells(parent, true, true)
@@ -54,15 +55,15 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
 
             vertices.clear();
 
-            // Creamos los vertices.
-            for (int i = 0; i < nombres.size(); i++) {
+            // Creamos los vértices.
+            for (int i = 0; i < cantidadVertices; i++) {
 
                 int[] posicion = calcularPosicion(i);
 
                 Object vertice = grafo.insertVertex(
                     parent,
                     null,
-                    nombres.get(i),
+                    String.valueOf(i),
                     posicion[0],
                     posicion[1],
                     70,
@@ -106,8 +107,9 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
 
         try {
 
-            // Primero dejamos todos los vertices en blanco.
+            // Restablecemos el color de todos los vértices.
             for (Object vertice : vertices) {
+
                 grafo.setCellStyles(
                     mxConstants.STYLE_FILLCOLOR,
                     "#FFFFFF",
@@ -115,7 +117,7 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
                 );
             }
 
-            // Luego resaltamos los vertices dominantes.
+            // Resaltamos los vértices dominantes.
             for (int indice : dominantes) {
 
                 if (indice >= 0 && indice < vertices.size()) {
@@ -141,6 +143,7 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
         grafo.getModel().beginUpdate();
 
         try {
+
             grafo.removeCells(
                 grafo.getChildCells(parent, true, true)
             );
@@ -154,7 +157,7 @@ public class VistaGrafo extends JPanel implements IVistaGrafo {
         componente.refresh();
     }
 
-    // Distribuye los vertices en filas alternadas de 3 y 2.
+    // Distribuye los vértices en filas alternadas de 3 y 2.
     private int[] calcularPosicion(int indice) {
 
         int fila = 0;

@@ -1,4 +1,3 @@
-
 package Persistence;
 
 import java.io.IOException;
@@ -6,91 +5,93 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 import Model.Arista;
-import Model.Red;
-import Model.Vertice;
+import Model.Red2;
 
 public class GSONPersistencia implements IPersistencia {
+
 	private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static final Path ARCHIVO = Paths.get("Data", "grafoPrueba.json");
 
-	
 	private static class RedDTO {
-		List<String> vertices = new ArrayList<String>();
-		List<int[]> aristas = new ArrayList<int[]>();
-	}
-	
-	
-	@Override
-	public Red cargar(Path archivo)	{
-		if(!Files.isRegularFile(archivo)) {
-			throw new PersistenciaException("No existe el archivo: " + archivo);
-		}
-		try(Reader reader = Files.newBufferedReader(archivo)) {
-		return aRed(gson.fromJson(reader, RedDTO.class));
-		}
-		catch (IOException | JsonParseException e) {
-			throw new PersistenciaException("No se pudo leer el archivo: " + archivo, e);
-		}
+		int cantidadVertices;
+		List<int[]> aristas = new ArrayList<>();
 	}
 
 	@Override
-	public void guardar(Red red, Path archivo) {
+	public void guardar(Red2 red) {
 		if (red == null) {
-			throw new IllegalArgumentException("No se puede guardar un red nulo.");
+			throw new IllegalArgumentException("La red no puede ser nula.");
+		}
+
+		RedDTO dto = new RedDTO();
+		dto.cantidadVertices = red.cantidadVertices();
+
+		for (Arista arista : red.obtenerAristasSinRepetidos()) {
+			dto.aristas.add(new int[] {arista.getOrigen(),arista.getDestino()});
 		}
 		try {
-			Path padre = archivo.toAbsolutePath().getParent();
-			if(padre != null) {
-				Files.createDirectories(padre);
+			// Crear la carpeta si todavía no existe.
+			Files.createDirectories(ARCHIVO.getParent());
+			try (Writer writer = Files.newBufferedWriter(ARCHIVO)) {
+				gson.toJson(dto, writer);
 			}
-			try (Writer writer = Files.newBufferedWriter(archivo)) {
-				gson.toJson(aDTO(red), writer);
+
+		} catch (IOException e) {
+			throw new PersistenciaException("No se pudo guardar el grafo.", e);
+		}
+	}
+
+	@Override
+	public Red2 cargar() {
+		if (!Files.exists(ARCHIVO)) {
+			throw new PersistenciaException("Todavía no existe un archivo guardado.");
+		}
+
+		try (Reader reader = Files.newBufferedReader(ARCHIVO)) {
+			RedDTO dto = gson.fromJson(reader, RedDTO.class);
+			if (dto == null || dto.cantidadVertices < 0 || dto.aristas == null) {
+				throw new PersistenciaException("El archivo no tiene un formato válido.");
 			}
+
+			Red2 red = new Red2();
+
+			// Primero creamos todos los vértices.
+			for (int i = 0; i < dto.cantidadVertices; i++) {
+				red.agregarVertice();
+			}
+
+			// Después reconstruimos las aristas.
+			for (int[] arista : dto.aristas) {
+
+				if (arista == null || arista.length != 2) {
+					throw new PersistenciaException("Una arista tiene un formato incorrecto.");
+				}
+
+				int origen = arista[0];
+				int destino = arista[1];
+
+				if (origen < 0 || origen >= dto.cantidadVertices ||
+						destino < 0 || destino >= dto.cantidadVertices) {
+
+					throw new PersistenciaException("Una arista contiene un vértice inexistente.");
+				}
+
+				red.agregarArista(origen, destino);
+			}
+
+			return red;
 
 		} catch (IOException | JsonParseException e) {
-			throw new PersistenciaException("No se pudo guardar el archivo: " + archivo, e);
+			throw new PersistenciaException("No se pudo leer el archivo guardado.", e);
 		}
 	}
-	
-	private Red aRed(RedDTO dto) {
-		if(dto == null || dto.vertices == null || dto.aristas == null) {
-			throw new PersistenciaException("El archivo no tiene el formato esperado");	
-		}
-		try {
-			Red red = new Red();
-			for(String nombre : dto.vertices) {
-				red.agregarVertice(nombre);
-			}
-			for(int[] arista : dto.aristas) {
-				if(arista == null || arista.length != 2) {
-					throw new PersistenciaException("Cada arista debe tener exactamente dos extremos");
-				}
-				red.agregarArista(arista[0], arista[1]);
-			}
-			return red;
-		} catch (IllegalArgumentException e) {
-			throw new PersistenciaException("Contenido invalido: " + e.getMessage(), e);
-		}
-		
-	}
-
-	private RedDTO aDTO(Red red) {
-		RedDTO dto = new RedDTO();
-		for(Vertice vertice : red.getVertices()) {
-			dto.vertices.add(vertice.getNombre());
-		}
-		for(Arista arista : red.aristas() ) {
-			dto.aristas.add(new int[] {arista.getOrigen(), arista.getDestino()});
-		}
-		return dto;
-	}
-	
 }

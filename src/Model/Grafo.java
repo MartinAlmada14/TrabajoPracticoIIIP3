@@ -38,6 +38,27 @@ public class Grafo {
 		verificarAmbosVertices(origen, destino);
 		return vecinos.get(origen).contains(destino);
 	}
+	
+	private void verificarAmbosVertices(int origen, int destino) {
+		verificarVertice(destino);
+		verificarVertice(origen);
+		verificarDistintos(origen, destino);
+	}
+	
+	private void verificarDistintos(int origen, int destino) {		
+		if( origen == destino) {
+			throw new IllegalArgumentException("No se permiten loops: (" + origen + ", " + destino + ")");
+		}
+	}
+	
+	private void verificarVertice(int vertice) {
+		if(vertice < 0) {
+			throw new IllegalArgumentException("El vertice no puede ser negativo: " + vertice);
+		}
+		if (vertice >= vecinos.size()) {
+			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + vertice);
+		}
+	}
 
 	public int tamano() {
 		return vecinos.size();
@@ -74,6 +95,20 @@ public class Grafo {
 		return resultado;
 	}
 	
+	public List<Arista> obtenerAristasSinRepetidos() {
+	    List<Arista> aristas = new ArrayList<>();
+
+	    for (int origen = 0; origen < vecinos.size(); origen++) {
+	        for (int destino : vecinos.get(origen)) {
+	            if (origen < destino) {
+	                aristas.add(new Arista(origen, destino));
+	            }
+	        }
+	    }
+
+	    return aristas;
+	}
+	
 	public Set<Integer> vertices() {
 	    Set<Integer> resultado = new HashSet<Integer>();
 	    for (int vertice = 0; vertice < vecinos.size(); vertice++) {
@@ -102,26 +137,5 @@ public class Grafo {
 			}
 		}
 		return false;
-	}
-
-	private void verificarAmbosVertices(int origen, int destino) {
-		verificarVertice(destino);
-		verificarVertice(origen);
-		verificarDistintos(origen, destino);
-	}
-
-	private void verificarDistintos(int origen, int destino) {		
-		if( origen == destino) {
-			throw new IllegalArgumentException("No se permiten loops: (" + origen + ", " + destino + ")");
-		}
-	}
-
-	private void verificarVertice(int vertice) {
-		if(vertice < 0) {
-			throw new IllegalArgumentException("El vertice no puede ser negativo: " + vertice);
-		}
-		if (vertice >= vecinos.size()) {
-			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + vertice);
-		}
 	}
 }

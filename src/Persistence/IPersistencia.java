@@ -1,13 +1,10 @@
 package Persistence;
 
-import java.nio.file.Path;
-import java.util.Optional;
-
-import Model.Red;
+import Model.Red2;
 
 public interface IPersistencia {
 
-	Red cargar(Path archivo);
-	void guardar(Red red, Path archivo);
-}
+    Red2 cargar();
 
+    void guardar(Red2 red);
+}

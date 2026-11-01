@@ -1,5 +1,6 @@
 package View;
 
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -8,11 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import Model.Vertice;
 
 public class PanelControles extends JPanel implements IControles {
 
@@ -21,17 +21,15 @@ public class PanelControles extends JPanel implements IControles {
 	private int y = 10;
 
 	private JTextField txtNombre;
-	private JTextField txtLat;
-	private JTextField txtLon;
 	private JTextField txtPeso;
-	private JTextField txtK;
 
-	private JComboBox<Vertice> comboOrigen;
-	private JComboBox<Vertice> comboDestino;
+	private JComboBox<Integer> comboOrigen;
+	private JComboBox<Integer> comboDestino;
 
 	private JButton btnAgregarVertice;
 	private JButton btnAgregarArista;
-	private JButton btnCalcular;
+	private JButton btnCalcularGoloso;
+	private JButton btnCalcularBackTraking;
 	private JButton btnGuardar;
 	private JButton btnCargar;
 	private JButton btnCargarArchivo;
@@ -40,33 +38,27 @@ public class PanelControles extends JPanel implements IControles {
 
 	public PanelControles() {
 		setLayout(null);
-		setBounds(670, 10, ANCHO, 600);
+		setPreferredSize(new Dimension(ANCHO, 600));
 
 		construirControles();
 	}
 
 	private void construirControles() {
 
-		agregarZona();
-		agregarRelacion();
+		agregarVertice();
+		agregarArista();
+		eliminarArista();
+		calcularGoloso();
+		calcularBackTraking();
 		agregarBotonesArchivo();
-		eliminarFrontera();
 	}
 
-	private void agregarZona() {
-		agregarEtiqueta("Nueva Zona");
+	private void agregarVertice() {
+		agregarEtiqueta("Nuevo vertice");
 		y += separacion;
 
 		agregarEtiqueta("Nombre:");
 		txtNombre = agregarCampoTexto(80, ANCHO-80);
-		y += separacion;
-
-		agregarEtiqueta("Lat (click en mapa):");
-		txtLat = agregarCampoTexto(150, ANCHO-150);
-		y += separacion;
-
-		agregarEtiqueta("Lon (click en mapa):");
-		txtLon = agregarCampoTexto(150, ANCHO-150);
 		y += separacion;
 
 		btnAgregarVertice = new JButton("Agregar Vertice");
@@ -76,8 +68,8 @@ public class PanelControles extends JPanel implements IControles {
 		y += 45;
 	}
 
-	private void agregarRelacion() {
-		agregarEtiqueta("Nueva Relación");
+	private void agregarArista() {
+		agregarEtiqueta("Nueva Arista");
 		y+=separacion;
 
 		agregarEtiqueta("Origen:");
@@ -96,15 +88,32 @@ public class PanelControles extends JPanel implements IControles {
 
 		y += separacion;
 
-		agregarEtiqueta("Similaridad:");
-
-		txtPeso = agregarCampoTexto(100, ANCHO-100);
-		y += separacion;
-
 		btnAgregarArista = new JButton("Agregar Arista");
 		btnAgregarArista.setBounds(0, y, ANCHO, 25);
 		add(btnAgregarArista);
 
+		y += separacion;
+	}
+	
+	private void eliminarArista() {
+		btnEliminarArista = new JButton("Eliminar Arista");
+		btnEliminarArista.setBounds(0, y, ANCHO, 25);
+		add(btnEliminarArista);
+
+		y += 45;
+	}
+	
+	private void calcularGoloso() {
+		btnCalcularGoloso = new JButton("Calcular conjunto dominante (Goloso)");
+		btnCalcularGoloso.setBounds(0, y, ANCHO, 25);
+		add(btnCalcularGoloso);
+		y += separacion;
+	}
+	
+	private void calcularBackTraking() {
+		btnCalcularBackTraking = new JButton("Calcular conjunto dominante (BackTRaing)");
+		btnCalcularBackTraking.setBounds(0, y, ANCHO, 25);
+		add(btnCalcularBackTraking);
 		y += 45;
 	}
 
@@ -122,14 +131,6 @@ public class PanelControles extends JPanel implements IControles {
 		btnCargarArchivo = new JButton("Cargar desde archivo...");
 		btnCargarArchivo.setBounds(0, y, ANCHO, 25);
 		add(btnCargarArchivo);
-
-		y += 35;
-	}
-
-	private void eliminarFrontera() {
-		btnEliminarArista = new JButton("Eliminar Relación");
-		btnEliminarArista.setBounds(0, y, ANCHO, 25);
-		add(btnEliminarArista);
 
 		y += 35;
 	}
@@ -162,8 +163,12 @@ public class PanelControles extends JPanel implements IControles {
 		btnEliminarArista.addActionListener(listener);
 	}
 	
-	public void setAccionCalcular(ActionListener listener) {
-		btnCalcular.addActionListener(listener);
+	public void setAccionCalcularGoloso(ActionListener listener) {
+		btnCalcularGoloso.addActionListener(listener);
+	}
+	
+	public void setAccionCalcularBackTraking(ActionListener listener) {
+		btnCalcularBackTraking.addActionListener(listener);
 	}
 
 	public void setAccionGuardar(ActionListener listener) {
@@ -185,36 +190,18 @@ public class PanelControles extends JPanel implements IControles {
 		return txtNombre.getText().trim();
 	}
 
-	public String getLatitud() {
-		return txtLat.getText().trim();
-	}
-
-	public String getLongitud() {
-		return txtLon.getText().trim();
-	}
-
 	public String getPeso() {
 		return txtPeso.getText().trim();
 	}
 
-	public String getK() {
-		return txtK.getText().trim();
-	}
-
 	public int getIndiceOrigen() {
-		return comboOrigen.getSelectedIndex();
+	    return comboOrigen.getSelectedItem() == null
+	            ? -1 : (Integer) comboOrigen.getSelectedItem();
 	}
 
 	public int getIndiceDestino() {
-		return comboDestino.getSelectedIndex();
-	}
-
-	public Vertice getOrigen() {
-		return (Vertice) comboOrigen.getSelectedItem();
-	}
-
-	public Vertice getDestino() {
-		return (Vertice) comboDestino.getSelectedItem();
+	    return comboDestino.getSelectedItem() == null
+	            ? -1 : (Integer) comboDestino.getSelectedItem();
 	}
 
 	public Optional<Path> elegirArchivo(){
@@ -224,26 +211,27 @@ public class PanelControles extends JPanel implements IControles {
 			return Optional.empty();
 		}
 		return Optional.of(chooser.getSelectedFile().toPath());
-	}	
-
-	public void establecerLatitud(double latitud) {
-	    txtLat.setText(String.valueOf(latitud));
 	}
+	
+	public void actualizarVertices(int cantidadVertices) {
 
-	public void establecerLongitud(double longitud) {
-	    txtLon.setText(String.valueOf(longitud));
+	    comboOrigen.removeAllItems();
+	    comboDestino.removeAllItems();
+
+	    for (int i = 0; i < cantidadVertices; i++) {
+	        comboOrigen.addItem(i);
+	        comboDestino.addItem(i);
+	    }
 	}
 
 	@Override
 	public void mostrarResultado(String texto) {
-		// TODO Auto-generated method stub
-		
+	    JOptionPane.showMessageDialog(this, texto, "Operación exitosa",JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	@Override
 	public void mostrarError(String mensaje) {
-		// TODO Auto-generated method stub
-		
+	    JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
