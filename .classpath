@@ -16,7 +16,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Usuario/Downloads/Nueva carpeta/jgraphx-master/lib/jgraphx.jar">
+	<classpathentry kind="lib" path="jgraphx.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
