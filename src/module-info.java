@@ -9,6 +9,7 @@ module TrabajoPracticoIII {
 	requires junit;
 	requires java.sql;
 	requires jgraphx;
-	opens Model to gson;
-	opens Persistence to gson;
+	requires gson;
+	opens model to gson;
+	opens persistence to gson;
 }
