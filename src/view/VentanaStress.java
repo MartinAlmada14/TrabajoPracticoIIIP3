@@ -18,15 +18,14 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 
 import presenter.StressPresenter;
 
 public class VentanaStress extends JDialog implements IVistaStress {
 
-	private final DefaultTableModel modeloTabla = new DefaultTableModel(
-			new String[] { "Vertices", "Tiempo (ms)", "Tamano del dominante" }, 0);
+	private String[] datos = { "Vertices", "Tiempo (ms)", "Tamano del dominante" };
+	private final DefaultTableModel modeloTabla = new DefaultTableModel(datos, 0);
 	private final JTable tabla = new JTable(modeloTabla);
 	private final JSpinner verticesIniciales = new JSpinner(new SpinnerNumberModel(10, 1, 500, 1));
 	private final JSpinner incremento = new JSpinner(new SpinnerNumberModel(2, 1, 100, 1));
@@ -91,12 +90,8 @@ public class VentanaStress extends JDialog implements IVistaStress {
 
 	private void armarPantalla() {
 		JPanel parametros = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		parametros.add(new JLabel("Vertices iniciales:"));
-		parametros.add(verticesIniciales);
-		parametros.add(new JLabel("Incremento:"));
-		parametros.add(incremento);
-		parametros.add(botonIniciar);
-		parametros.add(botonDetener);
+		
+		agregarParametros(parametros);
 		
 		add(parametros, BorderLayout.NORTH);
 		add(new JScrollPane(tabla), BorderLayout.CENTER);
@@ -106,10 +101,18 @@ public class VentanaStress extends JDialog implements IVistaStress {
 		setSize(620, 420);
 		setLocationRelativeTo(getOwner());
 	}
+	
+	private void agregarParametros(JPanel parametros) {
+		parametros.add(new JLabel("Vertices iniciales:"));
+		parametros.add(verticesIniciales);
+		parametros.add(new JLabel("Incremento:"));
+		parametros.add(incremento);
+		parametros.add(botonIniciar);
+		parametros.add(botonDetener);
+	}
 
 	private void conectarEventos() {
-		botonIniciar.addActionListener(e ->
-				presenter.iniciar((int) verticesIniciales.getValue(), (int) incremento.getValue()));
+		botonIniciar.addActionListener(e ->presenter.iniciar((int) verticesIniciales.getValue(), (int) incremento.getValue()));
 		botonDetener.addActionListener(e -> presenter.detener());
 		addWindowListener(new WindowAdapter() {
 			@Override

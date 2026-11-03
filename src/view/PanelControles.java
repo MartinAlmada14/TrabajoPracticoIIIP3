@@ -11,17 +11,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class PanelControles extends JPanel implements IControles {
 
 	private final int ANCHO = 300;
 
 	private int y = 10;
-
-	private JTextField txtNombre;
-	private JTextField txtPeso;
 
 	private JComboBox<Integer> comboOrigen;
 	private JComboBox<Integer> comboDestino;
@@ -46,7 +41,6 @@ public class PanelControles extends JPanel implements IControles {
 	}
 
 	private void construirControles() {
-
 		agregarVertice();
 		agregarArista();
 		eliminarArista();
@@ -58,11 +52,6 @@ public class PanelControles extends JPanel implements IControles {
 	private void agregarVertice() {
 		agregarEtiqueta("Nuevo vertice");
 		y += separacion;
-
-		/*agregarEtiqueta("Nombre:");
-		txtNombre = agregarCampoTexto(80, ANCHO-80);
-		y += separacion;*/
-
 		btnAgregarVertice = new JButton("Agregar Vertice");
 		btnAgregarVertice.setBounds(0, y, ANCHO, 25);
 		add(btnAgregarVertice);
@@ -152,14 +141,6 @@ public class PanelControles extends JPanel implements IControles {
 		add(etiqueta);
 	}
 
-	/*private JTextField agregarCampoTexto(int x, int ancho) {
-		JTextField campo = new JTextField();
-		campo.setBounds(x, y, ancho, 22);
-		add(campo);
-
-		return campo;
-	}*/
-
 	//	METODOS DE ACCION
 
 	public void setAccionAgregarVertice(ActionListener listener) {
@@ -201,25 +182,12 @@ public class PanelControles extends JPanel implements IControles {
 		btnTestStress.addActionListener(listener);
 	}
 
-
-	// METODOS DE LECTURA
-
-	/*public String getNombre() {
-		return txtNombre.getText().trim();
-	}
-
-	public String getPeso() {
-		return txtPeso.getText().trim();
-	}*/
-
 	public int getIndiceOrigen() {
-	    return comboOrigen.getSelectedItem() == null
-	            ? -1 : (Integer) comboOrigen.getSelectedItem();
+	    return comboOrigen.getSelectedItem() == null? -1 : (Integer) comboOrigen.getSelectedItem();
 	}
 
 	public int getIndiceDestino() {
-	    return comboDestino.getSelectedItem() == null
-	            ? -1 : (Integer) comboDestino.getSelectedItem();
+	    return comboDestino.getSelectedItem() == null? -1 : (Integer) comboDestino.getSelectedItem();
 	}
 
 	@Override
@@ -242,10 +210,9 @@ public class PanelControles extends JPanel implements IControles {
 	}
 	
 	public void actualizarVertices(int cantidadVertices) {
-
 	    comboOrigen.removeAllItems();
 	    comboDestino.removeAllItems();
-
+	    
 	    for (int i = 0; i < cantidadVertices; i++) {
 	        comboOrigen.addItem(i);
 	        comboDestino.addItem(i);
@@ -260,18 +227,6 @@ public class PanelControles extends JPanel implements IControles {
 	@Override
 	public void mostrarError(String mensaje) {
 	    JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-	}
-
-	@Override
-	public void mostrarProgreso(int tamanoGrafo, long milisegundos) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void habilitarDetener(boolean habilitado) {
-		// TODO Auto-generated method stub
-		
 	}
 }
 

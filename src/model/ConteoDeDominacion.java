@@ -5,20 +5,20 @@ class ConteoDeDominacion {
 	private final int[] dominadores;
 	private int cantidadSinDominar;
 
-	ConteoDeDominacion(Grafo grafo) {
+	public ConteoDeDominacion(Grafo grafo) {
 		this.grafo = grafo;
 		this.dominadores = new int[grafo.tamano()];
 		this.cantidadSinDominar = grafo.tamano();
 	}
 
-	void agregarDominador(int vertice) {
+	public void agregarDominador(int vertice) {
 		sumarDominador(vertice);
 		for(int vecino : grafo.vecinos(vertice)) {
 			sumarDominador(vecino);
 		}
 	}
 
-	void quitarDominador(int vertice) {
+	public void quitarDominador(int vertice) {
 		restarDominador(vertice);
 		for(int vecino : grafo.vecinos(vertice)) {
 			restarDominador(vecino);
