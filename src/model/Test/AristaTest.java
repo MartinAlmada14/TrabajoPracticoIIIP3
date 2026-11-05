@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import model.Arista;
 
-public class aristaTest {
+public class AristaTest {
 
     @Test
     public void testGetters() {

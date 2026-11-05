@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Grafo {
-	private List<Set<Integer>> vecinos = new ArrayList<Set<Integer>>();
+	private final List<Set<Integer>> vecinos = new ArrayList<Set<Integer>>();
 
 	public Grafo(int cantVertices) {
 		if(cantVertices < 0) {
@@ -17,12 +17,12 @@ public class Grafo {
 			agregarVertice();
 		}
 	}
-	
+
 	public void agregarVertice() {
 		vecinos.add(new HashSet<Integer>());
 	}
-	
-	public void agregarArista(int origen,int destino) {
+
+	public void agregarArista(int origen, int destino) {
 		verificarAmbosVertices(origen, destino);
 		vecinos.get(origen).add(destino);
 		vecinos.get(destino).add(origen);
@@ -38,37 +38,16 @@ public class Grafo {
 		verificarAmbosVertices(origen, destino);
 		return vecinos.get(origen).contains(destino);
 	}
-	
-	private void verificarAmbosVertices(int origen, int destino) {
-		verificarVertice(destino);
-		verificarVertice(origen);
-		verificarDistintos(origen, destino);
-	}
-	
-	private void verificarDistintos(int origen, int destino) {		
-		if( origen == destino) {
-			throw new IllegalArgumentException("No se permiten loops: (" + origen + ", " + destino + ")");
-		}
-	}
-	
-	private void verificarVertice(int vertice) {
-		if(vertice < 0) {
-			throw new IllegalArgumentException("El vertice no puede ser negativo: " + vertice);
-		}
-		if (vertice >= vecinos.size()) {
-			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + vertice);
-		}
-	}
 
 	public int tamano() {
 		return vecinos.size();
 	}
 
 	public Set<Integer> vecinos(int vertice) {
-		verificarVertice(vertice);		
+		verificarVertice(vertice);
 		return Collections.unmodifiableSet(vecinos.get(vertice));
 	}
-	
+
 	public int grado(int vertice) {
 		verificarVertice(vertice);
 		return vecinos.get(vertice).size();
@@ -76,62 +55,77 @@ public class Grafo {
 
 	public int cantidadAristas() {
 		int sumaGrados = 0;
-		for(Set<Integer> vecinos : vecinos) {
-			sumaGrados += vecinos.size();
+		for(Set<Integer> vecinosDelVertice : vecinos) {
+			sumaGrados += vecinosDelVertice.size();
 		}
 		return sumaGrados / 2;
 	}
-	
-	/*public List<Arista> aristas(){
-		List<Arista> resultado = new ArrayList<Arista>();
+
+	public List<Arista> obtenerAristasSinRepetidos() {
+		List<Arista> aristas = new ArrayList<>();
+
 		for(int origen = 0; origen < vecinos.size(); origen++) {
 			for(int destino : vecinos.get(origen)) {
 				if(origen < destino) {
-					resultado.add(new Arista(origen, destino));
+					aristas.add(new Arista(origen, destino));
 				}
 			}
 		}
-		
-		return resultado;
-	}*/
-	
-	public List<Arista> obtenerAristasSinRepetidos() {
-	    List<Arista> aristas = new ArrayList<>();
-
-	    for (int origen = 0; origen < vecinos.size(); origen++) {
-	        for (int destino : vecinos.get(origen)) {
-	            if (origen < destino) {
-	                aristas.add(new Arista(origen, destino));
-	            }
-	        }
-	    }
-
-	    return aristas;
+		return aristas;
 	}
-	
+
 	public Set<Integer> vertices() {
-	    Set<Integer> resultado = new HashSet<Integer>();
-	    for (int vertice = 0; vertice < vecinos.size(); vertice++) {
-	        resultado.add(vertice);
-	    }
-	    return resultado;
-	}
-	
-	public boolean esDominante(Set<Integer> candidato) {
-		for(int v : candidato) {
-			verificarVertice(v);
+		Set<Integer> resultado = new HashSet<Integer>();
+		for(int vertice = 0; vertice < vecinos.size(); vertice++) {
+			resultado.add(vertice);
 		}
-		for(int v = 0; v < vecinos.size(); v++) {
-			if(!candidato.contains(v) && !tieneVecinoEn(v, candidato)) {
+		return resultado;
+	}
+
+	public boolean esDominante(Set<Integer> candidato) {
+		verificarVertices(candidato);
+
+		for(int vertice = 0; vertice < vecinos.size(); vertice++) {
+			if(!estaDominado(vertice, candidato)) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
-	
-	private boolean tieneVecinoEn(int v, Set<Integer> candidato) {
-		for(int vecino : vecinos.get(v)) {
+
+	private void verificarAmbosVertices(int origen, int destino) {
+		verificarVertice(destino);
+		verificarVertice(origen);
+		verificarDistintos(origen, destino);
+	}
+
+	private void verificarVertice(int vertice) {
+		if(vertice < 0) {
+			throw new IllegalArgumentException("El vertice no puede ser negativo: " + vertice);
+		}
+		if(vertice >= vecinos.size()) {
+			throw new IllegalArgumentException("Los vertices deben estar entre 0 y |V|-1: " + vertice);
+		}
+	}
+
+	private void verificarDistintos(int origen, int destino) {
+		if(origen == destino) {
+			throw new IllegalArgumentException("No se permiten loops: (" + origen + ", " + destino + ")");
+		}
+	}
+
+	private void verificarVertices(Set<Integer> candidato) {
+		for(int vertice : candidato) {
+			verificarVertice(vertice);
+		}
+	}
+
+	private boolean estaDominado(int vertice, Set<Integer> candidato) {
+		return candidato.contains(vertice) || tieneVecinoEn(vertice, candidato);
+	}
+
+	private boolean tieneVecinoEn(int vertice, Set<Integer> candidato) {
+		for(int vecino : vecinos.get(vertice)) {
 			if(candidato.contains(vecino)) {
 				return true;
 			}

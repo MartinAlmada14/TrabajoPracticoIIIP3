@@ -10,7 +10,7 @@ import org.junit.Test;
 import model.Arista;
 import model.Grafo;
 
-public class grafoTest {
+public class GrafoTest {
 
     private Grafo grafo;
 

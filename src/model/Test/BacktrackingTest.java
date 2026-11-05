@@ -10,7 +10,7 @@ import model.Grafo;
 import model.algoritmo.Backtracking;
 import model.algoritmo.EjecucionCanceladaException;
 
-public class backtrackingTest {
+public class BacktrackingTest {
 
     private Backtracking solver;
 

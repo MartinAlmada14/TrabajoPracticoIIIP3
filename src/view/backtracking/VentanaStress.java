@@ -24,8 +24,8 @@ import presenter.StressPresenter;
 
 public class VentanaStress extends JDialog implements IVistaStress {
 
-	private String[] datos = { "Vertices", "Tiempo (ms)", "Tamano del dominante" };
-	private final DefaultTableModel modeloTabla = new DefaultTableModel(datos, 0);
+	private final String[] nombresDeColumnas = { "Vertices", "Tiempo (ms)", "Tamano del dominante" };
+	private final DefaultTableModel modeloTabla = new DefaultTableModel(nombresDeColumnas, 0);
 	private final JTable tabla = new JTable(modeloTabla);
 	private final JSpinner verticesIniciales = new JSpinner(new SpinnerNumberModel(10, 1, 500, 1));
 	private final JSpinner incremento = new JSpinner(new SpinnerNumberModel(2, 1, 100, 1));
@@ -52,7 +52,7 @@ public class VentanaStress extends JDialog implements IVistaStress {
 		SwingUtilities.invokeLater(() -> {
 			modeloTabla.setRowCount(0);
 			labelResumen.setText(" ");
-			});
+		});
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class VentanaStress extends JDialog implements IVistaStress {
 	public void mostrarMensajeFinal(String mensaje) {
 		SwingUtilities.invokeLater(() -> labelResumen.setText(mensaje));
 	}
-	
+
 	private void agregarFila(int tamanoGrafo, long milisegundos, int tamanoConjuntoDominante) {
 		modeloTabla.addRow(new Object[] { tamanoGrafo, milisegundos, tamanoConjuntoDominante });
 		int ultimaFila = modeloTabla.getRowCount() - 1;
@@ -89,30 +89,30 @@ public class VentanaStress extends JDialog implements IVistaStress {
 	}
 
 	private void armarPantalla() {
-		JPanel parametros = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		
-		agregarParametros(parametros);
-		
-		add(parametros, BorderLayout.NORTH);
-		add(new JScrollPane(tabla), BorderLayout.CENTER);
-		
 		labelResumen.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
+
+		add(crearPanelDeParametros(), BorderLayout.NORTH);
+		add(new JScrollPane(tabla), BorderLayout.CENTER);
 		add(labelResumen, BorderLayout.SOUTH);
+
 		setSize(620, 420);
 		setLocationRelativeTo(getOwner());
 	}
-	
-	private void agregarParametros(JPanel parametros) {
+
+	private JPanel crearPanelDeParametros() {
+		JPanel parametros = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		parametros.add(new JLabel("Vertices iniciales:"));
 		parametros.add(verticesIniciales);
 		parametros.add(new JLabel("Incremento:"));
 		parametros.add(incremento);
 		parametros.add(botonIniciar);
 		parametros.add(botonDetener);
+		return parametros;
 	}
 
 	private void conectarEventos() {
-		botonIniciar.addActionListener(e ->presenter.iniciar((int) verticesIniciales.getValue(), (int) incremento.getValue()));
+		botonIniciar.addActionListener(e ->
+				presenter.iniciar((int) verticesIniciales.getValue(), (int) incremento.getValue()));
 		botonDetener.addActionListener(e -> presenter.detener());
 		addWindowListener(new WindowAdapter() {
 			@Override

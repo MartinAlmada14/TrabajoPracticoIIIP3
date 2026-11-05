@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Arista {
 
-	private int origen;
-	private int destino;
-	
+	private final int origen;
+	private final int destino;
+
 	public Arista(int origen, int destino) {
 		this.origen = origen;
 		this.destino = destino;
@@ -26,18 +26,17 @@ public class Arista {
 			return false;
 		}
 		Arista otra = (Arista) o;
-		return (origen == otra.origen && destino == otra.destino) || (origen == otra.destino && destino == otra.origen);
+		return (origen == otra.origen && destino == otra.destino)
+				|| (origen == otra.destino && destino == otra.origen);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(Math.min(origen, destino), Math.max(origen, destino));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + origen + "," + destino + ")";
 	}
-	
-	
 }

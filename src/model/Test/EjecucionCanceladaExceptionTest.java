@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import model.algoritmo.EjecucionCanceladaException;
 
-public class ejecucionCanceladaExceptionTest {
+public class EjecucionCanceladaExceptionTest {
 
     @Test
     public void testConstructorMensajePorDefecto() {

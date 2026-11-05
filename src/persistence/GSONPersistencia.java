@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -13,8 +12,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 
-import model.Arista;
-import model.Red2;
+import model.RedDeGrafos;
 
 public class GSONPersistencia implements IPersistencia {
 
@@ -26,7 +24,7 @@ public class GSONPersistencia implements IPersistencia {
 	}
 
 	@Override
-	public Red2 cargar(Path archivo) {
+	public RedDeGrafos cargar(Path archivo) {
 		if (!Files.isRegularFile(archivo)) {
 			throw new PersistenciaException("No existe el archivo: " + archivo);
 		}
@@ -34,7 +32,7 @@ public class GSONPersistencia implements IPersistencia {
 	}
 
 	@Override
-	public void guardar(Red2 red, Path archivo) {
+	public void guardar(RedDeGrafos red, Path archivo) {
 		if (red == null) {
 			throw new IllegalArgumentException("La red no puede ser nula.");
 		}
@@ -67,22 +65,19 @@ public class GSONPersistencia implements IPersistencia {
 		}
 	}
 
-	private RedDTO aDTO(Red2 red) {
+	private RedDTO aDTO(RedDeGrafos red) {
 		RedDTO dto = new RedDTO();
 		dto.cantidadVertices = red.cantidadVertices();
-		dto.aristas = new ArrayList<int[]>();
-		for (Arista arista : red.obtenerAristasSinRepetidos()) {
-			dto.aristas.add(new int[] { arista.getOrigen(), arista.getDestino() });
-		}
+		dto.aristas = red.obtenerAristasComoPares();
 		return dto;
 	}
 
-	private Red2 aRed(RedDTO dto) {
+	private RedDeGrafos aRed(RedDTO dto) {
 		if (!esFormatoValido(dto)) {
 			throw new PersistenciaException("El archivo no tiene un formato valido.");
 		}
 		try {
-			Red2 red = new Red2();
+			RedDeGrafos red = new RedDeGrafos();
 			agregarVertices(red, dto.cantidadVertices);
 			agregarAristas(red, dto.aristas);
 			return red;
@@ -94,13 +89,13 @@ public class GSONPersistencia implements IPersistencia {
 		return dto != null && dto.cantidadVertices != null && dto.cantidadVertices >= 0 && dto.aristas != null;
 	}
 
-	private void agregarVertices(Red2 red, int cantidad) {
+	private void agregarVertices(RedDeGrafos red, int cantidad) {
 		for (int i = 0; i < cantidad; i++) {
 			red.agregarVertice();
 		}
 	}
 
-	private void agregarAristas(Red2 red, List<int[]> aristas) {
+	private void agregarAristas(RedDeGrafos red, List<int[]> aristas) {
 		for (int[] arista : aristas) {
 			if (arista == null || arista.length != 2) {
 				throw new PersistenciaException("Una arista debe tener exactamente dos extremos.");

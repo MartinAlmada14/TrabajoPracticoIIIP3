@@ -10,7 +10,7 @@ import model.algoritmo.ObservadorDeStress;
 import model.algoritmo.ResultadoInstancia;
 import model.algoritmo.StressRunner;
 
-public class stressRunnerTest {
+public class StressRunnerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorRandomNuloLanzaExcepcion() {

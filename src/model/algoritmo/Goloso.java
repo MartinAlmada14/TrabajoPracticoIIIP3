@@ -2,12 +2,12 @@ package model.algoritmo;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import model.Grafo;
-public class Goloso implements Solver{
+
+public class Goloso implements Solver {
 	private Set<Integer> dominantes;
 	private Set<Integer> sinCubrir;
-	private int mejorVertice;
-	private int mejorCobertura;
 
 	@Override
 	public Set<Integer> resolver(Grafo grafo) {
@@ -15,40 +15,40 @@ public class Goloso implements Solver{
 		sinCubrir = grafo.vertices();
 
 		while(!sinCubrir.isEmpty()) {
-			
-			mejorCobertura(grafo);
-			dominantes.add(mejorVertice);
-			
-			sinCubrir.remove(mejorVertice);
-			sinCubrir.removeAll(grafo.vecinos(mejorVertice));
+			agregarDominante(elegirMejorVertice(grafo), grafo);
 		}
-
 		return dominantes;
 	}
-	
-	private void mejorCobertura(Grafo grafo){
-		mejorVertice = -1;
-		mejorCobertura = -1;
+
+	private void agregarDominante(int vertice, Grafo grafo) {
+		dominantes.add(vertice);
+		sinCubrir.remove(vertice);
+		sinCubrir.removeAll(grafo.vecinos(vertice));
+	}
+
+	private int elegirMejorVertice(Grafo grafo) {
+		int mejorVertice = -1;
+		int mejorCobertura = -1;
+
 		for(int vertice = 0; vertice < grafo.tamano(); vertice++) {
 			int cobertura = cobertura(vertice, grafo);
-			if (cobertura > mejorCobertura) {
+			if(cobertura > mejorCobertura) {
 				mejorCobertura = cobertura;
 				mejorVertice = vertice;
 			}
 		}
-	}	
-	
-	private int cobertura(int v, Grafo grafo) {
-		int cobertura = 0;
-		if(sinCubrir.contains(v)) {
-			cobertura++;
+		return mejorVertice;
+	}
+
+	private int cobertura(int vertice, Grafo grafo) {
+		int cobertura = unoSiSinCubrir(vertice);
+		for(int vecino : grafo.vecinos(vertice)) {
+			cobertura += unoSiSinCubrir(vecino);
 		}
-		Set<Integer> vecinos = grafo.vecinos(v);
-		for(int vecino : vecinos) {
-			if(sinCubrir.contains(vecino)) {
-				cobertura++;
-			}
-		}		
 		return cobertura;
+	}
+
+	private int unoSiSinCubrir(int vertice) {
+		return sinCubrir.contains(vertice) ? 1 : 0;
 	}
 }

@@ -7,23 +7,23 @@ import org.junit.Before;
 import org.junit.Test;
 
 import model.Arista;
-import model.Red2;
+import model.RedDeGrafos;
 
-public class red2Test {
+public class RedDeGrafosTest {
 
-    private Red2 red;
+    private RedDeGrafos red;
 
     @Before
     public void setUp() {
-        red = new Red2();
+        red = new RedDeGrafos();
     }
 
-    @Test
-    public void testEstadoInicial() {
-        assertEquals(0, red.cantidadVertices());
-        assertTrue(red.obtenerAristasSinRepetidos().isEmpty());
-    }
-
+	@Test
+	public void testEstadoInicial() {
+		assertEquals(0, red.cantidadVertices());
+		assertTrue(red.obtenerAristasComoPares().isEmpty());
+	}
+	
     @Test
     public void testAgregarVerticeYCantidadVertices() {
         red.agregarVertice();
@@ -31,20 +31,20 @@ public class red2Test {
         assertEquals(2, red.cantidadVertices());
     }
 
-    @Test
-    public void testAgregarYEliminarArista() {
-        red.agregarVertice();
-        red.agregarVertice();
-        red.agregarVertice();
-        red.agregarArista(0, 1);
-        red.agregarArista(1, 2);
-        assertEquals(2, red.obtenerAristasSinRepetidos().size());
+	@Test
+	public void testAgregarYEliminarArista() {
+		red.agregarVertice();
+		red.agregarVertice();
+		red.agregarVertice();
+		red.agregarArista(0, 1);
+		red.agregarArista(1, 2);
+		assertEquals(2, red.obtenerAristasComoPares().size());
 
-        red.eliminarArista(0, 1);
-        List<Arista> aristas = red.obtenerAristasSinRepetidos();
-        assertEquals(1, aristas.size());
-        assertEquals(new Arista(1, 2), aristas.get(0));
-    }
+		red.eliminarArista(0, 1);
+		List<int[]> aristas = red.obtenerAristasComoPares();
+		assertEquals(1, aristas.size());
+		assertArrayEquals(new int[] { 1, 2 }, aristas.get(0));
+	}
 
     @Test(expected = IllegalArgumentException.class)
     public void testAgregarAristaVerticeInexistenteLanzaExcepcion() {
@@ -85,8 +85,4 @@ public class red2Test {
         assertTrue(conjunto.contains(1));
     }
 
-    @Test
-    public void testCargarDesdeArchivoMetodoVacio() {
-        red.cargarDesdeArchivo(null);
-    }
 }

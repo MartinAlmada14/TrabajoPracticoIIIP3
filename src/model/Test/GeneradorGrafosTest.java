@@ -7,7 +7,7 @@ import org.junit.Test;
 import model.GeneradorGrafos;
 import model.Grafo;
 
-public class generadorGrafosTest {
+public class GeneradorGrafosTest {
 
     @Test
     public void testGenerarGrafoSinAristasProbabilidadCero() {

@@ -2,13 +2,11 @@ package presenter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import model.Arista;
-import model.Red2;
+
+import model.RedDeGrafos;
 import persistence.IPersistencia;
 import persistence.PersistenciaException;
 import view.IControles;
@@ -21,7 +19,7 @@ public class Presenter {
 	private final IVistaGrafo vista;
 	private final IControles controles;
 	private final IPersistencia persistencia;
-	private Red2 red = new Red2();
+	private RedDeGrafos red = new RedDeGrafos();
 	private Path archivoActual;   // null si el grafo no esta asociado a un archivo
 
 	public Presenter(IVistaGrafo vista, IControles controles, IPersistencia persistencia) {
@@ -83,7 +81,7 @@ public class Presenter {
 	}
 
 	public void limpiar() {
-		red = new Red2();
+		red = new RedDeGrafos();
 		archivoActual = null;
 		actualizarVista();
 	}
@@ -111,20 +109,18 @@ public class Presenter {
 
 	private void informar(Set<Integer> dominantes) {
 		vista.resaltarDominantes(dominantes);
-		controles.mostrarResultado("Conjunto dominante (tamano " + dominantes.size() + "): "
-				+ new TreeSet<Integer>(dominantes));
+		controles.mostrarResultado(mensajeDeConjuntoDominante(dominantes));
+	}
+
+	private String mensajeDeConjuntoDominante(Set<Integer> dominantes) {
+		return "Conjunto dominante (tamano " + dominantes.size() + "): "
+				+ new TreeSet<Integer>(dominantes);
 	}
 
 	private void actualizarVista() {
-		vista.dibujar(red.cantidadVertices(), aristasParaLaVista());
+		vista.dibujar(red.cantidadVertices(), red.obtenerAristasComoPares());
 		controles.actualizarVertices(red.cantidadVertices());
 	}
 
-	private List<int[]> aristasParaLaVista() {
-		List<int[]> aristas = new ArrayList<>();
-		for (Arista arista : red.obtenerAristasSinRepetidos()) {
-			aristas.add(new int[] { arista.getOrigen(), arista.getDestino() });
-		}
-		return aristas;
-	}
+
 }

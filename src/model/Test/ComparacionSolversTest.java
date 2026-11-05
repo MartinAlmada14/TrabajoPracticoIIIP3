@@ -16,7 +16,7 @@ import model.algoritmo.Backtracking;
 import model.algoritmo.Goloso;
 import model.algoritmo.StressRunner;
 
-public class comparacionSolversTest {
+public class ComparacionSolversTest {
 	
 	@Test
 	public void testGolosoMayorOIgualABacktrackingYAmbosSonDominantes() {

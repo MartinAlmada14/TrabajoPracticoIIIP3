@@ -14,115 +14,139 @@ import com.mxgraph.view.mxGraph;
 
 public class VistaGrafo extends JPanel implements IVistaGrafo {
 
-    private mxGraph grafo;
-    private Object parent;
-    private mxGraphComponent componente;
-    private List<Object> vertices;
+	private static final String COLOR_VERTICE_NORMAL = "#FFFFFF";
+	private static final String COLOR_VERTICE_DOMINANTE = "#90EE90";
+	private static final String ESTILO_VERTICE =
+			"shape=ellipse;fillColor=" + COLOR_VERTICE_NORMAL + ";strokeColor=#000000;fontColor=#000000;";
 
-    public VistaGrafo() {
+	private static final int ANCHO_VERTICE = 70;
+	private static final int ALTO_VERTICE = 50;
+	private static final int CANTIDAD_FILA_LARGA = 3;
+	private static final int CANTIDAD_FILA_CORTA = 2;
+	private static final int INICIO_FILA_LARGA = 100;
+	private static final int INICIO_FILA_CORTA = 175;
+	private static final int MARGEN_SUPERIOR = 50;
+	private static final int SEPARACION_HORIZONTAL = 150;
+	private static final int SEPARACION_VERTICAL = 110;
 
-        setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(700, 500));
+	private final mxGraph grafo = new mxGraph();
+	private final Object parent = grafo.getDefaultParent();
+	private final List<Object> vertices = new ArrayList<Object>();
+	private final mxGraphComponent componente;
 
-        grafo = new mxGraph();
-        parent = grafo.getDefaultParent();
+	public VistaGrafo() {
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(700, 500));
 
-        vertices = new ArrayList<Object>();
+		grafo.setCellsEditable(false);
+		grafo.setCellsMovable(false);
+		grafo.setCellsResizable(false);
 
-        grafo.setCellsEditable(false);
-        grafo.setCellsMovable(false);
-        grafo.setCellsResizable(false);
+		componente = new mxGraphComponent(grafo);
+		componente.setConnectable(false);
 
-        componente = new mxGraphComponent(grafo);
-        componente.setConnectable(false);
+		add(componente, BorderLayout.CENTER);
+	}
 
-        add(componente, BorderLayout.CENTER);
-    }
+	@Override
+	public void dibujar(int cantidadVertices, List<int[]> aristas) {
+		enTransaccion(() -> {
+			borrarCeldas();
+			insertarVertices(cantidadVertices);
+			insertarAristas(aristas);
+		});
+	}
 
-    @Override
-    public void dibujar(int cantidadVertices, List<int[]> aristas) {
-        grafo.getModel().beginUpdate();
+	@Override
+	public void resaltarDominantes(Set<Integer> dominantes) {
+		enTransaccion(() -> {
+			pintarTodosLosVertices(COLOR_VERTICE_NORMAL);
+			pintarVertices(dominantes, COLOR_VERTICE_DOMINANTE);
+		});
+	}
 
-        try {
-            grafo.removeCells(grafo.getChildCells(parent, true, true));
-            vertices.clear();
-            for (int i = 0; i < cantidadVertices; i++) {
+	@Override
+	public void limpiar() {
+		enTransaccion(this::borrarCeldas);
+	}
 
-                int[] posicion = calcularPosicion(i);
+	private void enTransaccion(Runnable cambios) {
+		grafo.getModel().beginUpdate();
+		try {
+			cambios.run();
+		}
+		finally {
+			grafo.getModel().endUpdate();
+		}
+		componente.refresh();
+	}
 
-                Object vertice = grafo.insertVertex(parent, null, String.valueOf(i), posicion[0], posicion[1], 70, 50,
-                    "shape=ellipse;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;");
-                vertices.add(vertice);
-            }
-            // Creamos las aristas.
-            for (int[] arista : aristas) {
-                int origen = arista[0];
-                int destino = arista[1];
-                if (origen >= 0 && origen < vertices.size() && destino >= 0 && destino < vertices.size()) {
-                    grafo.insertEdge(parent, null, "", vertices.get(origen), vertices.get(destino));
-                }
-            }
-        } 
-        finally {
-            grafo.getModel().endUpdate();
-        }
-        componente.refresh();
-    }
+	private void borrarCeldas() {
+		grafo.removeCells(grafo.getChildCells(parent, true, true));
+		vertices.clear();
+	}
 
-    @Override
-    public void resaltarDominantes(Set<Integer> dominantes) {
-        grafo.getModel().beginUpdate();
-        try {
-            for (Object vertice : vertices) {
-                grafo.setCellStyles(mxConstants.STYLE_FILLCOLOR,"#FFFFFF",new Object[] { vertice });
-            }
-            for (int indice : dominantes) {
-                if (indice >= 0 && indice < vertices.size()) {
-                    grafo.setCellStyles(mxConstants.STYLE_FILLCOLOR, "#90EE90", new Object[] { vertices.get(indice) });
-                }
-            }
-        } 
-        finally {
-            grafo.getModel().endUpdate();
-        }
-        componente.refresh();
-    }
+	private void insertarVertices(int cantidadVertices) {
+		for(int indice = 0; indice < cantidadVertices; indice++) {
+			insertarVertice(indice);
+		}
+	}
 
-    @Override
-    public void limpiar() {
-        grafo.getModel().beginUpdate();
-        try {
-            grafo.removeCells(grafo.getChildCells(parent, true, true));
-            vertices.clear();
-        } 
-        finally {
-            grafo.getModel().endUpdate();
-        }
-        componente.refresh();
-    }
+	private void insertarVertice(int indice) {
+		int[] posicion = calcularPosicion(indice);
+		vertices.add(grafo.insertVertex(parent, null, String.valueOf(indice),
+				posicion[0], posicion[1], ANCHO_VERTICE, ALTO_VERTICE, ESTILO_VERTICE));
+	}
 
-    private int[] calcularPosicion(int indice) {
-        int fila = 0;
-        int restantes = indice;
-        
-        while (true) {
-        	
-            int cantidadFila = (fila % 2 == 0) ? 3 : 2;
-            if (restantes < cantidadFila) {
-                break;
-            }
-            restantes -= cantidadFila;
-            fila++;
-        }
+	private void insertarAristas(List<int[]> aristas) {
+		for(int[] arista : aristas) {
+			if(esIndiceValido(arista[0]) && esIndiceValido(arista[1])) {
+				grafo.insertEdge(parent, null, "", vertices.get(arista[0]), vertices.get(arista[1]));
+			}
+		}
+	}
 
-        int cantidadFila = (fila % 2 == 0) ? 3 : 2;
+	private void pintarTodosLosVertices(String color) {
+		for(Object vertice : vertices) {
+			pintar(vertice, color);
+		}
+	}
 
-        int separacion = 150;
-        int inicioX = (cantidadFila == 3) ? 100 : 175;
+	private void pintarVertices(Set<Integer> indices, String color) {
+		for(int indice : indices) {
+			if(esIndiceValido(indice)) {
+				pintar(vertices.get(indice), color);
+			}
+		}
+	}
 
-        int x = inicioX + restantes * separacion;
-        int y = 50 + fila * 110;
+	private void pintar(Object vertice, String color) {
+		grafo.setCellStyles(mxConstants.STYLE_FILLCOLOR, color, new Object[] { vertice });
+	}
 
-        return new int[] { x, y };
-    }
+	private boolean esIndiceValido(int indice) {
+		return indice >= 0 && indice < vertices.size();
+	}
+
+	private int[] calcularPosicion(int indice) {
+		int fila = 0;
+		int restantes = indice;
+
+		while(restantes >= cantidadEnFila(fila)) {
+			restantes -= cantidadEnFila(fila);
+			fila++;
+		}
+
+		int x = inicioHorizontal(fila) + restantes * SEPARACION_HORIZONTAL;
+		int y = MARGEN_SUPERIOR + fila * SEPARACION_VERTICAL;
+		return new int[] { x, y };
+	}
+
+	private int cantidadEnFila(int fila) {
+		return (fila % 2 == 0) ? CANTIDAD_FILA_LARGA : CANTIDAD_FILA_CORTA;
+	}
+
+	private int inicioHorizontal(int fila) {
+		return (cantidadEnFila(fila) == CANTIDAD_FILA_LARGA) ? INICIO_FILA_LARGA : INICIO_FILA_CORTA;
+	}
 }

@@ -8,7 +8,7 @@ import org.junit.Test;
 import model.Grafo;
 import model.algoritmo.Goloso;
 
-public class golosoTest {
+public class GolosoTest {
 
     private Goloso solver;
 

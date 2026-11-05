@@ -2,9 +2,9 @@ package persistence;
 
 import java.nio.file.Path;
 
-import model.Red2;
+import model.RedDeGrafos;
 
 public interface IPersistencia {
-	Red2 cargar(Path archivo);
-	void guardar(Red2 red, Path archivo);
+	RedDeGrafos cargar(Path archivo);
+	void guardar(RedDeGrafos red, Path archivo);
 }

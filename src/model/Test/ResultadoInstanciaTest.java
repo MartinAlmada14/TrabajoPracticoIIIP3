@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import model.algoritmo.ResultadoInstancia;
 
-public class resultadoInstanciaTest {
+public class ResultadoInstanciaTest {
 
     @Test
     public void testGetters() {

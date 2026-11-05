@@ -20,11 +20,15 @@ public class StressPresenter {
 		if(estaEnEjecucion()) {
 			return;
 		}
+		ultimoResultado = null;
 		vista.limpiarResultados();
 		vista.mostrarEnEjecucion();
+		iniciarHilo(verticesIniciales, incremento);
+	}
+
+	private void iniciarHilo(int verticesIniciales, int incremento) {
 		hiloDelStress = new Thread(() -> correr(verticesIniciales, incremento), "stress-backtracking");
 		hiloDelStress.start();
-		ultimoResultado = null;
 	}
 
 	public void detener() {
