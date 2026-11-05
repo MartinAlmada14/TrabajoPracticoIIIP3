@@ -10,11 +10,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import model.Backtracking;
 import model.GeneradorGrafos;
-import model.Goloso;
 import model.Grafo;
-import model.StressRunner;
+import model.algoritmo.Backtracking;
+import model.algoritmo.Goloso;
+import model.algoritmo.StressRunner;
 
 public class comparacionSolversTest {
 	

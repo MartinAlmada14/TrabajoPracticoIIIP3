@@ -5,8 +5,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import model.Goloso;
 import model.Grafo;
+import model.algoritmo.Goloso;
 
 public class golosoTest {
 

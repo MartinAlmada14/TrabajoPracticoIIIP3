@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import model.algoritmo.Backtracking;
+import model.algoritmo.Goloso;
+
 public class Red2 {
 
     private Grafo grafo = new Grafo(0);

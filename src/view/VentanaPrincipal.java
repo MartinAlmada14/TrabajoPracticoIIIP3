@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 
 import persistence.GSONPersistencia;
 import presenter.Presenter;
+import view.backtracking.VentanaStress;
 
 public class VentanaPrincipal {
 	private Presenter presenter;

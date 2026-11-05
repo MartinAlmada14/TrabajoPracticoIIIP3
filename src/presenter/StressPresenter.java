@@ -2,9 +2,9 @@ package presenter;
 
 import java.util.Random;
 
-import model.ResultadoInstancia;
-import model.StressRunner;
-import view.IVistaStress;
+import model.algoritmo.ResultadoInstancia;
+import model.algoritmo.StressRunner;
+import view.backtracking.IVistaStress;
 
 public class StressPresenter {
 	private final IVistaStress vista;

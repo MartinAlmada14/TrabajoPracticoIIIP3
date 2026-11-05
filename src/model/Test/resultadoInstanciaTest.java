@@ -3,7 +3,7 @@ package model.Test;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import model.ResultadoInstancia;
+import model.algoritmo.ResultadoInstancia;
 
 public class resultadoInstanciaTest {
 

@@ -6,9 +6,9 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import model.Backtracking;
-import model.EjecucionCanceladaException;
 import model.Grafo;
+import model.algoritmo.Backtracking;
+import model.algoritmo.EjecucionCanceladaException;
 
 public class backtrackingTest {
 

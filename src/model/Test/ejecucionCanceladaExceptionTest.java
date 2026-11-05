@@ -3,7 +3,7 @@ package model.Test;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import model.EjecucionCanceladaException;
+import model.algoritmo.EjecucionCanceladaException;
 
 public class ejecucionCanceladaExceptionTest {
 

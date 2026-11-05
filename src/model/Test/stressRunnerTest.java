@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Random;
 import org.junit.Test;
 
-import model.ObservadorDeStress;
-import model.ResultadoInstancia;
-import model.StressRunner;
+import model.algoritmo.ObservadorDeStress;
+import model.algoritmo.ResultadoInstancia;
+import model.algoritmo.StressRunner;
 
 public class stressRunnerTest {
 
