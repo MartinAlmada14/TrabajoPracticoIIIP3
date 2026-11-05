@@ -1,6 +1,6 @@
 package model;
 
-class ConteoDeDominacion {
+public class ConteoDeDominacion {
 	private final Grafo grafo;
 	private final int[] dominadores;
 	private int cantidadSinDominar;
@@ -25,11 +25,11 @@ class ConteoDeDominacion {
 		}
 	}
 
-	boolean todosDominados() {
+	public boolean todosDominados() {
 		return cantidadSinDominar == 0;
 	}
 
-	boolean estaDominado(int vertice) {
+	public boolean estaDominado(int vertice) {
 		return dominadores[vertice] > 0;
 	}
 
